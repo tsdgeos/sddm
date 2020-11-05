@@ -31,6 +31,7 @@
 #include <QDir>
 #include <QProcess>
 #include <QUuid>
+#include <QThread>
 
 #include <random>
 
@@ -172,6 +173,7 @@ namespace SDDM {
             if (displayPtr()->seat()->name() == QLatin1String("seat0")) {
                 args << QStringLiteral("vt%1").arg(displayPtr()->terminalId());
             }
+            QThread::sleep(1);
             qDebug() << "Running:"
                      << qPrintable(mainConfig.X11.ServerPath.get())
                      << qPrintable(args.join(QLatin1Char(' ')));
@@ -202,7 +204,7 @@ namespace SDDM {
             QByteArray displayNumber = readPipe.readLine();
             if (displayNumber.size() < 2) {
                 // X server gave nothing (or a whitespace).
-                qCritical("Failed to read display number from pipe");
+                qCritical("Failed to read display number from pipeee");
 
                 close(pipeFds[0]);
                 return false;
