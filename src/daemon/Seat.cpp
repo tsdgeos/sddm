@@ -85,7 +85,7 @@ namespace SDDM {
         m_displays << display;
 
         // start the display
-        for(int tryNr = 0; tryNr < 3; ++tryNr) {
+        for(int tryNr = 0; tryNr < 60; ++tryNr) {
             if (display->start())
                 return true;
 
@@ -93,7 +93,7 @@ namespace SDDM {
             // device not enumerated, ...). It's not possible to tell when that changes,
             // so try a few times with a delay in between.
             qWarning() << "Attempt" << tryNr << "starting the Display server on vt" << terminalId << "failed";
-            QThread::sleep(2);
+            QThread::msleep(100);
         }
 
         qCritical() << "Could not start Display server on vt" << terminalId;
