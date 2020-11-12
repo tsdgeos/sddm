@@ -28,6 +28,7 @@
 
 #include <QDebug>
 #include <QFile>
+#include <QThread>
 
 #include <functional>
 
@@ -84,12 +85,19 @@ namespace SDDM {
         m_displays << display;
 
         // start the display
-        if (!display->start()) {
-            qCritical() << "Could not start Display server on vt" << terminalId;
-            return false;
+        for(int tryNr = 0; tryNr < 3; ++tryNr) {
+            if (display->start())
+                return true;
+
+            // It's possible that the system isn't ready yet (driver not loaded,
+            // device not enumerated, ...). It's not possible to tell when that changes,
+            // so try a few times with a delay in between.
+            qWarning() << "Attempt" << tryNr << "starting the Display server on vt" << terminalId << "failed";
+            QThread::sleep(2);
         }
 
-        return true;
+        qCritical() << "Could not start Display server on vt" << terminalId;
+        return false;
     }
 
     void Seat::removeDisplay(Display* display) {
